@@ -1,13 +1,14 @@
 import numpy as np
 
 def T_mapping(T_map, expl_r, T_ref):
-    mapping = np.zeros(T_map.shape)
-    for i in T_map.shape[0]:
-        for j in T_map.shape[1]:
-            i_prime, j_prime = vicinity_search(i,j,expl_r, T_map.shape, T_ref)
+    mapping=np.full(T_map.shape, np.nan, dtype='f,f')
+    for i in range(T_map.shape[0]):
+        for j in range(T_map.shape[1]):
+            i_prime, j_prime = vicinity_search(i,j,expl_r, T_map.shape, T_ref, T_map)
             mapping[i,j] = (i_prime, j_prime)
+    return mapping
             
-def vicinity_search(i,j,expl_r, shape):
+def vicinity_search(i,j,expl_r, shape, T_ref, T_map):
     T_target = T_map[i,j]
     i_prime = i
     j_prime = j
@@ -25,11 +26,11 @@ def get_best_from_path(path, T_target, shape, T_ref):
     min_e = np.inf
     for i,j in path:
         j = j % shape[0]
-        T_r = T_ref[i_prime, j_prime]
+        T_r = T_ref[i, j]
         if np.abs(T_r - T_target)<min_e:
-            min_inds = (i_prime, j_prime)
+            min_inds = (i, j)
             min_e = np.abs(T_r - T_target)
-    return min_inds, min_e
+    return min_inds[0], min_inds[1], min_e
 
 def get_path(i,j,round_number, shape):
     pixels=[(i,j)]
