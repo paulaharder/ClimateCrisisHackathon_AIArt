@@ -1,0 +1,30 @@
+################################################################################
+#   SPECIFICATIONS FOR TEMPERATURE BASED IMAGE DEFORMATION TASK
+################################################################################
+
+# Path to source temperature field netcdf dataarray
+src: 'data/cmip/1950-1959.nc'
+
+
+# Path to target temperature field netcdf dataarray
+tgt: 'data/cmip/2010-2014.nc'
+
+
+# Number of pixel within which search for closest similar temperature should be done
+exploration_range: 5
+
+
+# Spacing between interpolating subgrid positions - should be > exploration range
+grid_step:
+  - 10
+  - 10
+
+
+# Kind of spline interpolation to use in {‘linear’, ‘cubic’, ‘quintic’}
+kind: 'linear'
+
+
+# Matplotlib figsize for dumped jpg image
+img_size:
+  - 18
+  - 8

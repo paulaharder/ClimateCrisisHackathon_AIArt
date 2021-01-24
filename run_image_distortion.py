@@ -9,11 +9,12 @@ Description : Given a source and a target scalar temperature field, computes lea
     (3): Warps RGB view with computed displacement and save distorted image
 
 Usage: run_image_distortion.py --cfg=<path_to_config_file> --o=<image_dumping_path>
+
 Options:
   --cfg=<path_to_config_file>                Path to configuration file specifying execution parameters
   --o=<dataset_dumping_path>                 Path to file where image will be dumped
 """
-import docopt
+from docopt import docopt
 import yaml
 import logging
 import xarray as xr
@@ -54,6 +55,7 @@ def main(args, cfg):
     plt.figure(figsize=cfg['img_size'])
     plt.imshow(remapped_img)
     plt.axis('off')
+    plt.tight_layout()
     plt.savefig(args['--o'])
     logging.info(f"Completed - image dumped at {args['--o']}")
 
