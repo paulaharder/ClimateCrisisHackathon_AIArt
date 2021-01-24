@@ -1,0 +1,10 @@
+exploration_range: 1
+grid_step:
+- 10
+- 10
+img_size:
+- 18
+- 8
+kind: linear
+src: data/cmip/2035-SSP2.nc
+tgt: data/cmip/2036-SSP2.nc

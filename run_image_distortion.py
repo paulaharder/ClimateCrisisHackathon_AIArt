@@ -8,23 +8,21 @@ Description : Given a source and a target scalar temperature field, computes lea
     (2): Computes corresponding displacement field
     (3): Warps RGB view with computed displacement and save distorted image
 
-Usage: run_image_distortion.py --cfg=<path_to_config_file> --o=<image_dumping_path>
+Usage: run_image_distortion.py --cfg=<path_to_config_file> --input=<path_to_input_img> --o=<image_dumping_path>
 
 Options:
   --cfg=<path_to_config_file>                Path to configuration file specifying execution parameters
-  --o=<dataset_dumping_path>                 Path to file where image will be dumped
+  --input=<path_to_input_img>                Path to input satellite RGB image
+  --o=<dataset_dumping_path>                 Path to file where image numpy array will be dumped
 """
 from docopt import docopt
 import yaml
 import logging
 import xarray as xr
 import numpy as np
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy import interpolate
 from PIL import Image
-
-RGB_IMG_PATH = './data/sat_image.jpg'
 
 
 def main(args, cfg):
@@ -48,15 +46,11 @@ def main(args, cfg):
 
     # Warp full mapping on RGB satellite view of earth and save
     logging.info("Applying displacement field to image")
-    remapped_img = warp_transform(img_path=RGB_IMG_PATH,
+    remapped_img = warp_transform(img_path=args['--input'],
                                   pred_lon=pred_lon, pred_lat=pred_lat)
 
-    # Dump figure
-    plt.figure(figsize=cfg['img_size'])
-    plt.imshow(remapped_img)
-    plt.axis('off')
-    plt.tight_layout()
-    plt.savefig(args['--o'])
+    # Dumpy image numpy array
+    np.save(args['--o'], remapped_img)
     logging.info(f"Completed - image dumped at {args['--o']}")
 
 
@@ -135,8 +129,8 @@ def interpolate_mapping(mapping, height, width, grid_step, kind):
     # Apply interpolating functions to full grid
     x_full = np.arange(0, width)
     y_full = np.arange(0, height)
-    pred_lon = lon_transform(x_full, y_full).clip(0, height - 1).astype(int)
-    pred_lat = lat_transform(x_full, y_full).clip(0, width - 1).astype(int)
+    pred_lon = lon_transform(x_full, y_full).clip(0, height - 1).round().astype(int)
+    pred_lat = lat_transform(x_full, y_full).clip(0, width - 1).round().astype(int)
     return pred_lon, pred_lat
 
 
@@ -153,8 +147,15 @@ def warp_transform(img_path, pred_lon, pred_lat):
 
     """
     # Load RGB satellite image
-    img = Image.open(img_path)
-    img = np.array(img)
+    if img_path.endswith('jpg') or img_path.endswith('png'):
+        img = Image.open(img_path)
+        img = np.array(img)
+
+    elif img_path.endswith('npy'):
+        img = np.load(img_path)
+
+    else:
+        raise ValueError("Unkown input image type")
 
     # Remap pixels location according to new longitude and latitudes
     full_mapping = np.dstack([pred_lon, pred_lat]).reshape(-1, 2)

@@ -11,7 +11,7 @@ tgt: 'data/cmip/2010-2014.nc'
 
 
 # Number of pixel within which search for closest similar temperature should be done
-exploration_range: 5
+exploration_range: 2
 
 
 # Spacing between interpolating subgrid positions - should be > exploration range
