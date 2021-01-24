@@ -25,7 +25,7 @@ def vicinity_search(i,j,expl_r, shape, T_ref, T_map):
 def get_best_from_path(path, T_target, shape, T_ref):
     min_e = np.inf
     for i,j in path:
-        j = j % shape[0]
+        j = j % shape[1]
         T_r = T_ref[i, j]
         if np.abs(T_r - T_target)<min_e:
             min_inds = (i, j)
